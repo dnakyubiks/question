@@ -164,11 +164,11 @@
         <h2>कक्षा १० हाजिरी जवाफ प्रतियोगिता</h2>
         <div class="form-group">
             <label>पहिलो समूहको नाम: </label><br>
-            <input type="text" id="team1-input" placeholder="उदाहरण: सगरमाथा" style="width: 80%;">
+            <input type="text" id="team1-input" placeholder="उदाहरण: छात्र (Boys)" style="width: 80%;">
         </div>
         <div class="form-group">
             <label>दोस्रो समूहको नाम: </label><br>
-            <input type="text" id="team2-input" placeholder="उदाहरण: अन्नपूर्ण" style="width: 80%;">
+            <input type="text" id="team2-input" placeholder="उदाहरण: छात्रा (Girls)" style="width: 80%;">
         </div>
         <div class="form-group">
             <label>विषय छान्नुहोस् (Category): </label><br>
@@ -226,7 +226,7 @@
         { cat: "मिश्रित", q: "नाङ्लो भरि सुपारी, गन्नै नजान्ने व्यापारी, के हो?", opts: ["मकै", "आकाशका तारा", "स्याउ", "धान"], ans: 1 },
         { cat: "मिश्रित", q: "वरपर गुट्टी माँझमा घ्वाईं, के हो?", opts: ["दाँत र जिब्रो", "आँखा", "कान", "नाग"], ans: 0 },
         { cat: "मिश्रित", q: "भित्र सुन बाहिर चाँदी, के हो?", opts: ["केरा", "स्याउ", "अण्डा", "सुन्तला"], ans: 2 },
-        { cat: "मिश्रित", q: "एक खुट्टे धामी थरथरी कामी, के हो?", opts: ["जुको", "रुख", "काँडा", "बन्चरो"], ans: 3 },
+        { cat: "मिश्रित", q: "एक खुट्टे धामी थरथरी कामी, के हो?", opts: ["रुख", "काँडा", "जुको", "बन्चरो"], ans: 2 },
         
         { cat: "मिश्रित", q: "कुन यस्तो वस्तु हो जसलाई जति बढी सफा गर्यो, उति नै कालो हुँदै जान्छ?", opts: ["लुगा", "ब्ल्याकबोर्ड", "ऐना", "जुत्ता"], ans: 1 },
         { cat: "मिश्रित", q: "एउटा मानिस पानी परेको बेला छाता नओढी बाहिर हिँड्यो तर उसको एउटा पनि कपाल भिजेन, किन?", opts: ["उ तालुखुइले थियो", "उ टोपी लगाएको थियो", "पानी परेको थिएन", "उ रुखमुनि थियो"], ans: 0 },
@@ -327,6 +327,7 @@
 
     let currentIndex = 0;
     let currentTurn = 1;
+    let questionOriginalTurn = 1;
     let answered = false;
 
     function startQuiz() {
@@ -347,6 +348,7 @@
         score2 = 0;
         currentIndex = 0;
         currentTurn = 1;
+        questionOriginalTurn = 1;
 
         document.getElementById("t1-name").innerText = team1;
         document.getElementById("t2-name").innerText = team2;
@@ -421,9 +423,10 @@
             
             document.getElementById(`o${data.ans}`).style.background = "#16a34a";
             document.getElementById(`o${data.ans}`).style.color = "white";
-        }
 
-        switchTurn();
+            // Incorrect answer automatically passes the turn to the other team to attempt/steal
+            switchTurn();
+        }
     }
 
     function passQuestion() {
@@ -439,6 +442,10 @@
     function nextQuestion() {
         if (currentIndex < quizData.length - 1) {
             currentIndex++;
+            // Switch main question turn to alternate team for the new question
+            questionOriginalTurn = questionOriginalTurn === 1 ? 2 : 1;
+            currentTurn = questionOriginalTurn;
+            updateTurnUI();
             loadQuestion();
         } else {
             alert(`सबै ${quizData.length} वटा प्रश्नहरू सकिएका छन्!`);
